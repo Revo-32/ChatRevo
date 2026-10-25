@@ -1,0 +1,29 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@font-face{font-family:ChatRevoJamsil;src:url('Fonts/TheJamsil-Regular.ttf');font-weight:400}
+@font-face{font-family:ChatRevoJamsil;src:url('Fonts/TheJamsil-Bold.ttf');font-weight:700}
+*{box-sizing:border-box}html,body{margin:0;background:transparent;color:#f0f4fa;font:20px/1.5 Jamsil,'Segoe UI Emoji',sans-serif}
+body{padding:18px 16px}.note{font:12px/1.5 'Segoe UI',sans-serif;color:#9aabbf;margin-bottom:24px;letter-spacing:.08em}
+.row{margin:0 0 16px;overflow-wrap:anywhere}.name{color:#f5934d;font-weight:bold;margin-right:7px}.purple{color:#b9b2d0}.blue{color:#96b6b1}
+.badge{display:inline-flex;align-items:center;justify-content:center;color:#10151c;background:#f5934d;border-radius:5px;width:1.1em;height:1.1em;font-size:.75em;margin-right:5px}
+.card{border:1px solid #8c684655;background:#48311e55;padding:14px;border-radius:10px;margin:18px 0}.label{font-size:.65em;color:#96b6b1;margin-bottom:6px}
+.emoji{display:inline-block;animation:bounce 1s ease-in-out infinite alternate}@keyframes bounce{to{transform:translateY(-4px)}}
+</style></head><body>
+<div class="note">미리보기</div>
+<div class="row"><span class="badge">★</span><span class="name">Revo</span>오늘도 반가워요!</div>
+<div class="row"><span class="name purple">달빛산책</span>이번 판 느낌 좋은데요 ✨</div>
+<div class="row"><span class="name blue">오늘도맑음</span>집중하면서 같이 봐요 <span class="emoji">💚</span></div>
+<div class="card"><div class="label">후원 메시지 예시</div><span class="name">반가운손님</span>응원합니다! 🎉</div>
+<div class="row"><span class="name purple">별빛</span>길게 쓴 메시지도 창 너비에 맞춰 자연스럽게 줄바꿈됩니다.</div>
+<div class="card"><div class="label">구독 알림 예시</div>함께한 시간이 쌓이고 있어요 💎</div>
+<div class="row"><span class="name">Revo</span>Ctrl + Alt + L로 잠그면 마우스가 게임으로 통과합니다.</div>
+<script src="readability.js"></script>
+<script>
+const customStyle=document.createElement('style');document.head.append(customStyle);
+window.__chatRevo={apply:s=>{
+  document.body.style.fontSize=s.fontSize+'px';
+  customStyle.textContent=s.nativeAppearance?'':window.ChatRevoReadability.css(s,true);
+}};
+window.__chatRevo.apply(window.ChatRevoReadability.defaults);
+</script>
+</body></html>

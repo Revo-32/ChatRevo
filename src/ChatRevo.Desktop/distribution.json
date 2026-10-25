@@ -1,0 +1,5 @@
+{
+  "githubRepository": "https://github.com/Revo-32/ChatRevo",
+  "updateChannel": "win",
+  "developmentRedirectUri": "http://localhost:42837/auth/callback"
+}

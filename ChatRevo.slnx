@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ChatRevo.Core/ChatRevo.Core.csproj" />
+    <Project Path="src/ChatRevo.Desktop/ChatRevo.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ChatRevo.Tests/ChatRevo.Tests.csproj" />
+  </Folder>
+</Solution>

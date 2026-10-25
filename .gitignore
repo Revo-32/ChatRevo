@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.vs/
+artifacts/
+work/
+*.user
+*.pfx
+*.key
+.env*
+!.env.example
+appsettings.Local.json
