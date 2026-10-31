@@ -25,6 +25,21 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public event Action? AppearanceChanged;
     public MainViewModel(AppSettings settings) { _settings = settings; _channelInput = settings.ChannelId; }
     public AppSettings Settings => _settings;
+    public IReadOnlyList<FontOption> Fonts => FontCatalog.All;
+    public IReadOnlyList<EffectOption> Animations => FontCatalog.Effects;
+    public string FontId { get => _settings.FontId; set { Change(_settings with { FontId=value }); Changed(nameof(FontAttribution)); Changed(nameof(SampleFont)); } }
+    public string? FontAttribution => FontCatalog.Find(FontId).Attribution;
+    public System.Windows.Media.FontFamily SampleFont => FontFamilyFor(FontCatalog.Find(FontId), false);
+    public static System.Windows.Media.FontFamily FontFamilyFor(FontOption font, bool bold)
+    {
+        var file = bold ? font.BoldFile ?? font.RegularFile : font.RegularFile;
+        var directory = Path.GetDirectoryName(Path.Combine(AppContext.BaseDirectory,"Assets","Fonts",file))!;
+        return new(new Uri(directory + Path.DirectorySeparatorChar), "./#" + (bold ? font.NativeBold : font.NativeRegular));
+    }
+    public string MessageAnimation { get => _settings.MessageAnimation; set { Change(_settings with {MessageAnimation=value}); Changed(nameof(AnimationEnabled)); } }
+    public bool AnimationEnabled => MessageAnimation != "none";
+    public double AnimationDuration { get => _settings.AnimationDuration; set => Change(_settings with {AnimationDuration=value}); }
+    public double AnimationDistance { get => _settings.AnimationDistance; set => Change(_settings with {AnimationDistance=value}); }
     public string AppVersion => typeof(MainViewModel).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
     public string VersionLabel => "v" + AppVersion;
     public string ChannelInput { get => _channelInput; set { _channelInput = value; Changed(); } }

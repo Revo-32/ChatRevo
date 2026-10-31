@@ -1,7 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-@font-face{font-family:ChatRevoJamsil;src:url('Fonts/TheJamsil-Regular.ttf');font-weight:400}
-@font-face{font-family:ChatRevoJamsil;src:url('Fonts/TheJamsil-Bold.ttf');font-weight:700}
 *{box-sizing:border-box}html,body{margin:0;background:transparent;color:#f0f4fa;font:20px/1.5 Jamsil,'Segoe UI Emoji',sans-serif}
 body{padding:18px 16px}.note{font:12px/1.5 'Segoe UI',sans-serif;color:#9aabbf;margin-bottom:24px;letter-spacing:.08em}
 .row{margin:0 0 16px;overflow-wrap:anywhere}.name{color:#f5934d;font-weight:bold;margin-right:7px}.purple{color:#b9b2d0}.blue{color:#96b6b1}
@@ -17,13 +15,29 @@ body{padding:18px 16px}.note{font:12px/1.5 'Segoe UI',sans-serif;color:#9aabbf;m
 <div class="row"><span class="name purple">별빛</span>길게 쓴 메시지도 창 너비에 맞춰 자연스럽게 줄바꿈됩니다.</div>
 <div class="card"><div class="label">구독 알림 예시</div>함께한 시간이 쌓이고 있어요 💎</div>
 <div class="row"><span class="name">Revo</span>Ctrl + Alt + L로 잠그면 마우스가 게임으로 통과합니다.</div>
-<script src="readability.js"></script>
 <script>
 const customStyle=document.createElement('style');document.head.append(customStyle);
+const effects=window.ChatRevoLayout.createEffects();
+const follow=window.ChatRevoLayout.create();
+follow.attach(document.scrollingElement);
+let settings=window.ChatRevoReadability.defaults, sequence=0;
+const examples=['새 채팅 효과를 확인해보세요 ✨','글꼴과 줄 간격이 바뀌어도 마지막 메시지를 따라갑니다.','반가워요! 오늘도 즐거운 방송 💚'];
+function sample(){
+ const row=document.createElement('div');row.className='row';
+ const name=document.createElement('span');name.className='name';name.textContent='Revo';
+ row.append(name,document.createTextNode(examples[sequence++%examples.length]));document.body.append(row);
+ const rows=[...document.querySelectorAll('.row,.card')];if(rows.length>24)rows[0].remove();
+ follow.refresh(document.querySelectorAll('.row,.card'));effects.enter([row]);
+}
 window.__chatRevo={apply:s=>{
+  const effectChanged=settings.messageAnimation!==s.messageAnimation;settings=s;
   document.body.style.fontSize=s.fontSize+'px';
-  customStyle.textContent=s.nativeAppearance?'':window.ChatRevoReadability.css(s,true);
-}};
+  customStyle.textContent=window.ChatRevoReadability.fontCss()+(s.nativeAppearance?'':window.ChatRevoReadability.css(s,true));
+  effects.configure(s);follow.refresh(document.querySelectorAll('.row,.card'));
+  if(effectChanged)sample();
+},setLocked:value=>follow.setLocked(value),follow,sample};
 window.__chatRevo.apply(window.ChatRevoReadability.defaults);
+const timer=setInterval(sample,3200);
+addEventListener('pagehide',()=>{clearInterval(timer);follow.dispose();effects.dispose();},{once:true});
 </script>
 </body></html>

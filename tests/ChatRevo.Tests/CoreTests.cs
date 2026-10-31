@@ -5,6 +5,18 @@ namespace ChatRevo.Tests;
 
 public class CoreTests
 {
+    [Fact]
+    public void FontAndAnimationSettingsPreserveOldSettingsAndNormalizeUnknownIds()
+    {
+        var old=System.Text.Json.JsonSerializer.Deserialize<AppSettings>("{\"FontSize\":26,\"Bold\":true}")!.Normalize();
+        Assert.Equal("jamsil",old.FontId); Assert.Equal("none",old.MessageAnimation);
+        Assert.Equal(26,old.FontSize); Assert.True(old.Bold);
+        var invalid=new AppSettings {FontId="unknown;font",MessageAnimation="bad",AnimationDuration=double.NaN,AnimationDistance=500}.Normalize();
+        Assert.Equal("jamsil",invalid.FontId); Assert.Equal("none",invalid.MessageAnimation);
+        Assert.Equal(240,invalid.AnimationDuration); Assert.Equal(32,invalid.AnimationDistance);
+        var current=new AppSettings {FontId="wanted",MessageAnimation="rise",AnimationDuration=400,AnimationDistance=18}.Normalize();
+        Assert.Equal(current,System.Text.Json.JsonSerializer.Deserialize<AppSettings>(System.Text.Json.JsonSerializer.Serialize(current)));
+    }
     private const string Id="daa441054054971cbd2488618efc9105";
     [Theory]
     [InlineData(Id)]

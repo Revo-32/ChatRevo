@@ -56,7 +56,10 @@ public partial class OverlayWindow : Window
             core.IsMuted = true;
             core.SetVirtualHostNameToFolderMapping("chatrevo.local", Path.Combine(AppContext.BaseDirectory, "Assets"), CoreWebView2HostResourceAccessKind.Allow);
             var assets = Path.Combine(AppContext.BaseDirectory, "Assets");
-            await core.AddScriptToExecuteOnDocumentCreatedAsync(File.ReadAllText(Path.Combine(assets, "readability.js")) + "\n" + File.ReadAllText(Path.Combine(assets, "overlay.js")));
+            var catalog = JsonSerializer.Serialize(FontCatalog.All, new JsonSerializerOptions { PropertyNamingPolicy=JsonNamingPolicy.CamelCase });
+            await core.AddScriptToExecuteOnDocumentCreatedAsync("window.ChatRevoFonts=" + catalog + ";\n" +
+                File.ReadAllText(Path.Combine(assets, "readability.js")) + "\n" +
+                File.ReadAllText(Path.Combine(assets, "chat-layout.js")) + "\n" + File.ReadAllText(Path.Combine(assets, "overlay.js")));
             core.NavigationCompleted += OnNavigationCompleted;
             core.WebMessageReceived += OnWebMessage;
             core.ProcessFailed += (_, _) => ShowError("브라우저 연결이 중단되었습니다. 다시 연결을 눌러주세요.");
@@ -120,7 +123,7 @@ public partial class OverlayWindow : Window
         if (Core is null || _disposed) return;
         var s = _controller.ViewModel.Settings;
         var json = JsonSerializer.Serialize(s, new JsonSerializerOptions { PropertyNamingPolicy=JsonNamingPolicy.CamelCase });
-        await Core.ExecuteScriptAsync($"window.__chatRevo?.apply({json});");
+        await Core.ExecuteScriptAsync($"window.__chatRevo?.apply({json});window.__chatRevo?.setLocked?.({_controller.ViewModel.Locked.ToString().ToLowerInvariant()});");
     }
     private void ApplyNativeStyle()
     {
@@ -130,6 +133,9 @@ public partial class OverlayWindow : Window
         Frame.Background = new SolidColorBrush(color);
         InfoBar.Visibility = s.ShowHeader ? Visibility.Visible : Visibility.Collapsed;
         HeaderChannel.FontSize = Math.Max(18, s.FontSize + 2);
+        var font = FontCatalog.Find(s.FontId);
+        HeaderChannel.FontFamily = ViewModels.MainViewModel.FontFamilyFor(font, true);
+        HeaderCount.FontFamily = ViewModels.MainViewModel.FontFamilyFor(font, false);
         HeaderCount.FontSize = Math.Max(14, Math.Round(s.FontSize * 0.8));
         LiveDot.Width = LiveDot.Height = Math.Max(6, Math.Round(s.FontSize * 0.35));
         FitHeader();
@@ -148,6 +154,13 @@ public partial class OverlayWindow : Window
         ResizeMode = locked ? ResizeMode.NoResize : ResizeMode.CanResizeWithGrip;
         Browser.IsHitTestVisible = !locked;
         NativeWindow.SetLocked(this, locked);
+        _ = ApplyLockToBrowserAsync(locked);
+    }
+    private async Task ApplyLockToBrowserAsync(bool locked)
+    {
+        if (Core is null || _disposed) return;
+        try { await Core.ExecuteScriptAsync($"window.__chatRevo?.setLocked?.({locked.ToString().ToLowerInvariant()});"); }
+        catch (Exception) { /* The next navigation applies the current lock state. */ }
     }
     public void Reload() { if (Core is not null && !_disposed) { _retryTimer.Stop(); ErrorPanel.Visibility = Visibility.Collapsed; Core.Navigate(_target); } }
     private void ShowError(string message) { ErrorText.Text = message; ErrorPanel.Visibility = Visibility.Visible; _controller.Report(message); }

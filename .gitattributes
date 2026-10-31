@@ -1,0 +1,2 @@
+# Keep upstream font files, notices and recorded hashes byte-for-byte on checkout.
+src/ChatRevo.Desktop/Assets/Fonts/** -text -whitespace

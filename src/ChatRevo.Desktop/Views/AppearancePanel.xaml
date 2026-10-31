@@ -19,7 +19,9 @@
      <Border Style="{StaticResource Card}">
       <StackPanel>
        <TextBlock Text="글자" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,20"/>
-       <ComboBox SelectedIndex="0"><ComboBoxItem Content="더잠실체"/></ComboBox>
+       <ComboBox x:Name="FontPicker" ItemsSource="{Binding Fonts}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding FontId}" MaxDropDownHeight="320"/>
+       <TextBlock Text="반가워요, 오늘도 함께해요 0123" FontFamily="{Binding SampleFont}" FontSize="18" TextWrapping="Wrap" Margin="0,14,0,0"/>
+       <TextBlock Text="{Binding FontAttribution}" FontSize="11" Foreground="#A6A19A" TextWrapping="Wrap"/>
        <DockPanel Margin="0,20,0,0"><TextBlock Text="크기"/><TextBlock Text="{Binding FontSize, StringFormat={}{0:0} px}" HorizontalAlignment="Right" Foreground="#F18A40"/></DockPanel>
        <Slider Minimum="12" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding FontSize}" AutomationProperties.AutomationId="FontSize"/>
        <CheckBox Content="굵은 글씨" IsChecked="{Binding Bold}"/>
@@ -42,6 +44,19 @@
      </Border>
     </StackPanel>
     <StackPanel Grid.Column="2">
+     <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+      <StackPanel>
+       <TextBlock Text="새 채팅 효과" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,20"/>
+       <ComboBox x:Name="AnimationPicker" ItemsSource="{Binding Animations}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding MessageAnimation}"/>
+       <StackPanel IsEnabled="{Binding AnimationEnabled}" Margin="0,18,0,0">
+        <StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger></Style.Triggers></Style></StackPanel.Style>
+        <DockPanel><TextBlock Text="재생 시간"/><TextBlock Text="{Binding AnimationDuration, StringFormat={}{0:0} ms}" HorizontalAlignment="Right" Foreground="#F18A40"/></DockPanel>
+        <Slider Minimum="100" Maximum="800" TickFrequency="20" IsSnapToTickEnabled="True" Value="{Binding AnimationDuration}"/>
+        <DockPanel><TextBlock Text="움직임 크기"/><TextBlock Text="{Binding AnimationDistance, StringFormat={}{0:0} px}" HorizontalAlignment="Right" Foreground="#F18A40"/></DockPanel>
+        <Slider Minimum="4" Maximum="32" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding AnimationDistance}" Margin="0,12,0,0"/>
+       </StackPanel>
+      </StackPanel>
+     </Border>
      <Border Style="{StaticResource Card}">
       <StackPanel>
        <TextBlock Text="외곽선" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,20"/>

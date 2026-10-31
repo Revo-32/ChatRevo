@@ -5,6 +5,10 @@ public sealed record AppSettings
     public int SchemaVersion { get; init; } = 1;
     public string ChannelId { get; init; } = "daa441054054971cbd2488618efc9105";
     public double FontSize { get; init; } = 20;
+    public string FontId { get; init; } = "jamsil";
+    public string MessageAnimation { get; init; } = "none";
+    public double AnimationDuration { get; init; } = 240;
+    public double AnimationDistance { get; init; } = 12;
     public bool Bold { get; init; }
     public string BackgroundColor { get; init; } = "#10151C";
     public double BackgroundOpacity { get; init; } = 35;
@@ -34,6 +38,10 @@ public sealed record AppSettings
     {
         ChannelId = ChannelAddress.TryParse(ChannelId, out var id) ? id : "",
         FontSize = Clamp(FontSize, 12, 48, 20),
+        FontId = FontCatalog.Find(FontId).Id,
+        MessageAnimation = FontCatalog.Effects.Any(e => e.Id == MessageAnimation) ? MessageAnimation : "none",
+        AnimationDuration = Clamp(AnimationDuration, 100, 800, 240),
+        AnimationDistance = Clamp(AnimationDistance, 4, 32, 12),
         BackgroundOpacity = Clamp(BackgroundOpacity, 0, 100, 35),
         BackgroundColor = System.Text.RegularExpressions.Regex.IsMatch(BackgroundColor ?? "", "^#[0-9a-fA-F]{6}$") ? BackgroundColor! : "#10151C",
         TextColor = Color(TextColor, "#FFFFFF"),

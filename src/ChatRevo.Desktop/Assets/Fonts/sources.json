@@ -1,0 +1,132 @@
+[
+  {
+    "file": "wanted/WantedSans-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/wanteddev/wanted-sans/02c9b822349c188ada95f9e2d90c2ed18f853235/packages/wanted-sans/fonts/ttf/WantedSans-Regular.ttf",
+    "sha256": "849b51938f5779e7526fcf09b3c737e9d401261d111f626280af16423bf19f40"
+  },
+  {
+    "file": "wanted/WantedSans-Bold.ttf",
+    "source": "https://raw.githubusercontent.com/wanteddev/wanted-sans/02c9b822349c188ada95f9e2d90c2ed18f853235/packages/wanted-sans/fonts/ttf/WantedSans-Bold.ttf",
+    "sha256": "7d97a38d0c35b2e43ff2ae47040133faf0324d1c78800a16aaaa5d276376037c"
+  },
+  {
+    "file": "wanted/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/wanteddev/wanted-sans/02c9b822349c188ada95f9e2d90c2ed18f853235/OFL.txt",
+    "sha256": "db345ad0216d0b73ba5dd3a540507281da6695f234e0a4e70cf2e1a8f30d4331"
+  },
+  {
+    "file": "pretendard/Pretendard-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/orioncactus/pretendard/7aeb0698819be2b4097dae8ec8fe6a795e5cf3ae/packages/pretendard/dist/public/static/alternative/Pretendard-Regular.ttf",
+    "sha256": "6d0af5258997aec7354a6e340fc2325ba321c410ca48b3af858c8c3d6e92a324"
+  },
+  {
+    "file": "pretendard/Pretendard-Bold.ttf",
+    "source": "https://raw.githubusercontent.com/orioncactus/pretendard/7aeb0698819be2b4097dae8ec8fe6a795e5cf3ae/packages/pretendard/dist/public/static/alternative/Pretendard-Bold.ttf",
+    "sha256": "c16b88c670d23e83fa1170c954cbc4822d3b8dad3c3cde15d798a94b43d97985"
+  },
+  {
+    "file": "pretendard/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/orioncactus/pretendard/7aeb0698819be2b4097dae8ec8fe6a795e5cf3ae/LICENSE",
+    "sha256": "82e9c8a4b203261f10ddba1296422d64914ff3d4b7bd8a12896d03f0f088d70a"
+  },
+  {
+    "file": "suit/SUIT-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/sun-typeface/SUIT/55118d981336d8fce005eb62888c12c0568ef7b0/fonts/static/ttf/SUIT-Regular.ttf",
+    "sha256": "88c94c990b9996c558666ef07c11664ab177c3be191e2846950b48f245d02274"
+  },
+  {
+    "file": "suit/SUIT-Bold.ttf",
+    "source": "https://raw.githubusercontent.com/sun-typeface/SUIT/55118d981336d8fce005eb62888c12c0568ef7b0/fonts/static/ttf/SUIT-Bold.ttf",
+    "sha256": "e9b000dcc7a21bc82289fa7d159119ed6dbae621fabdb2553a104394a208e23d"
+  },
+  {
+    "file": "suit/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/sun-typeface/SUIT/55118d981336d8fce005eb62888c12c0568ef7b0/LICENSE",
+    "sha256": "30d101ee3c35ef629d622d933d261a27b2f60223e0a3b0f36791e569c2b9daa9"
+  },
+  {
+    "file": "ibmplexsanskr/IBMPlexSansKR-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/ibmplexsanskr/IBMPlexSansKR-Regular.ttf",
+    "sha256": "53750379270312368cf7641901f43a98dd892e3d9d5798cf25cdc245c85c71c0"
+  },
+  {
+    "file": "ibmplexsanskr/IBMPlexSansKR-Bold.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/ibmplexsanskr/IBMPlexSansKR-Bold.ttf",
+    "sha256": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d"
+  },
+  {
+    "file": "ibmplexsanskr/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/ibmplexsanskr/OFL.txt",
+    "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da"
+  },
+  {
+    "file": "nanumgothic/NanumGothic-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/nanumgothic/NanumGothic-Regular.ttf",
+    "sha256": "76f45ef4a6bcff344c837c95a7dcc26e017e38b5846d5ae0cdcb5b86be2e2d31"
+  },
+  {
+    "file": "nanumgothic/NanumGothic-Bold.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/nanumgothic/NanumGothic-Bold.ttf",
+    "sha256": "f96298f9fb18e364d2370f4c3ce948ac67a2b61af992d7234bc15c42b033c674"
+  },
+  {
+    "file": "nanumgothic/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/nanumgothic/OFL.txt",
+    "sha256": "eeacf16032901d0ed0456876ec77b8f0fda6b3fecec7d972f8543eb602e6c30f"
+  },
+  {
+    "file": "gowundodum/GowunDodum-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gowundodum/GowunDodum-Regular.ttf",
+    "sha256": "a6e457933227483a11758fd0947bc74422a106d46f0bf057fdaa5af94a30067d"
+  },
+  {
+    "file": "gowundodum/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gowundodum/OFL.txt",
+    "sha256": "a7c73f9521cd646bbdfb6684c99a62311bbd7bce11898dc11ef0b3c69eda1aca"
+  },
+  {
+    "file": "gowunbatang/GowunBatang-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gowunbatang/GowunBatang-Regular.ttf",
+    "sha256": "466c593e7147412e748af4856d5ad14709b5a860bdf62b9c2546f2c5874e9849"
+  },
+  {
+    "file": "gowunbatang/GowunBatang-Bold.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gowunbatang/GowunBatang-Bold.ttf",
+    "sha256": "dbfcaa646e5831e7478524924f02906f550285a5050699b4e38c9950b3ec4b94"
+  },
+  {
+    "file": "gowunbatang/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/gowunbatang/OFL.txt",
+    "sha256": "49a57cc769fa9affd6eefb9070a61e3d3f6b757c97cafb15848bc6d1c81acc78"
+  },
+  {
+    "file": "jua/Jua-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/jua/Jua-Regular.ttf",
+    "sha256": "769677aef240bfc3b9965f2b50748075bff885e6c6992fc591a3fb268279f898"
+  },
+  {
+    "file": "jua/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/jua/OFL.txt",
+    "sha256": "44a7c6e4c5572392ae122d3b1d8c6ba6fd640a7797e675384585d947f2773e3c"
+  },
+  {
+    "file": "dohyeon/DoHyeon-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/dohyeon/DoHyeon-Regular.ttf",
+    "sha256": "35644be7f28e0a68a447b1f7af351dcde5674b870f24f7b5f43e26d00b4ab653"
+  },
+  {
+    "file": "dohyeon/LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/6c1dbe27dcf7d817d4b62cec033ba77fa8e2a5ec/ofl/dohyeon/OFL.txt",
+    "sha256": "de5ff32211a4340b01477af39ee339d639438955e409f79b666d4b9207f3c92c"
+  },
+  {
+    "file": "kimm/KIMM_Light.ttf",
+    "source": "https://www.kimm.re.kr/webfont/file_down/id/50997",
+    "sha256": "99d8b567468b7e1e382a0399a039bcb1a43ed34567d07164a0247f5b9b17e287"
+  },
+  {
+    "file": "kimm/KIMM_bold.ttf",
+    "source": "https://www.kimm.re.kr/webfont/file_down/id/50997",
+    "sha256": "06780f55cb8266e931ce99d78323213cf26ac46cfa9773b7bb5b5e2f2d5c596e"
+  }
+]

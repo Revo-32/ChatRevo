@@ -1,0 +1,17 @@
+Chat Revo 포함 서체
+
+더잠실체: 롯데쇼핑(주) 롯데마트사업부. The_Jamsil_LICENSE_Korean.pdf 참조.
+Wanted Sans: Wanted Sans Project Authors / wanteddev/wanted-sans. wanted/LICENSE.txt 참조.
+Pretendard: 길형진 및 원본 글꼴 저작자. pretendard/LICENSE.txt 참조.
+SUIT: sun-typeface/SUIT. suit/LICENSE.txt 참조.
+IBM Plex Sans KR: IBM. ibmplexsanskr/LICENSE.txt 참조.
+나눔고딕: NAVER. nanumgothic/LICENSE.txt 참조.
+고운돋움·고운바탕: 류양희 및 각 프로젝트 저작자. 해당 폴더 LICENSE.txt 참조.
+배민 주아체·도현체: 우아한형제들 및 각 프로젝트 저작자. 해당 폴더 LICENSE.txt 참조.
+한국기계연구원체: 출처 – 한국기계연구원, kimm.re.kr
+  https://www.kimm.re.kr/webfont / kimm/LICENSE.txt 참조.
+
+Wanted Sans, Pretendard, SUIT, IBM Plex Sans KR, 나눔고딕, 고운돋움,
+고운바탕, 주아체, 도현체는 동봉된 SIL Open Font License 1.1을 따릅니다.
+원본 파일을 변형하거나 시스템에 설치하지 않고 앱 내부에서만 불러옵니다.
+배포 출처와 다운로드 파일의 SHA-256은 sources.json에 기록되어 있습니다.

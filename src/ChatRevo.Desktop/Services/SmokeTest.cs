@@ -21,6 +21,33 @@ internal static class SmokeTest
             result["startupStatus"] = app.ViewModel.Status;
             result["initializationError"] = app.Overlay.InitializationError;
             result["preview"] = await app.Overlay.Core!.ExecuteScriptAsync("document.body.innerText.includes('미리보기')");
+            var regressionPath = Environment.GetEnvironmentVariable("CHATREVO_BROWSER_TEST_SCRIPT");
+            if (regressionPath is not null)
+            {
+                await app.Overlay.Core.ExecuteScriptAsync(File.ReadAllText(regressionPath));
+                string regression = "null";
+                for (var attempt=0; attempt<120 && regression is "null"; attempt++)
+                {
+                    await Task.Delay(250);
+                    regression=await app.Overlay.Core.ExecuteScriptAsync("window.__chatRevoRegression ?? null");
+                }
+                result["browserRegression"]=JsonSerializer.Deserialize<JsonElement>(regression);
+                using var report=JsonDocument.Parse(regression);
+                if (report.RootElement.ValueKind!=JsonValueKind.Object || !report.RootElement.GetProperty("ok").GetBoolean())
+                    throw new InvalidOperationException("브라우저 회귀 검사 실패: "+regression);
+                await app.Overlay.Core.ExecuteScriptAsync("window.createInputProbe();");
+                await Task.Delay(200);
+                await app.Overlay.Core.CallDevToolsProtocolMethodAsync("Input.dispatchMouseEvent", "{\"type\":\"mouseWheel\",\"x\":100,\"y\":100,\"deltaY\":-250,\"deltaX\":0}");
+                await Task.Delay(400);
+                result["wheelPausesHistory"] = await CheckScript(app,"!inputProbe.follow.following && inputProbe.box.scrollTop < -50");
+                await app.Overlay.Core.ExecuteScriptAsync("inputProbe.saved=inputProbe.box.scrollTop;inputProbe.add();");
+                await Task.Delay(200);
+                result["wheelHistoryStable"] = await CheckScript(app,"Math.abs(inputProbe.saved-inputProbe.box.scrollTop)<2");
+                await app.Overlay.Core.CallDevToolsProtocolMethodAsync("Input.dispatchMouseEvent", "{\"type\":\"mouseWheel\",\"x\":100,\"y\":100,\"deltaY\":800,\"deltaX\":0}");
+                await Task.Delay(400);
+                result["wheelResumesBottom"] = await CheckScript(app,"inputProbe.follow.following && inputProbe.follow.distance<2");
+                await app.Overlay.Core.ExecuteScriptAsync("inputProbe.dispose();");
+            }
             app.ViewModel.FontSize=28; app.ViewModel.BackgroundOpacity=25;
             await Task.Delay(700);
             result["fontSize"] = await app.Overlay.Core.ExecuteScriptAsync("getComputedStyle(document.body).fontSize");
@@ -53,6 +80,18 @@ internal static class SmokeTest
             app.Main.Navigation.SelectedIndex=1;
             await Task.Delay(300);
             CaptureWpf(app.Main,Path.Combine(dir,"appearance.png"));
+            app.Main.Appearance.FontPicker.SelectedValue="wanted";
+            app.Main.Appearance.AnimationPicker.SelectedValue="rise";
+            await Task.Delay(800);
+            result["fontPickerBinds"] = app.ViewModel.FontId == "wanted" && app.ViewModel.MessageAnimation == "rise";
+            result["previewFontSelection"] = await CheckScript(app,"getComputedStyle(document.querySelector('.row')).fontFamily.includes('ChatRevo_wanted')");
+            CaptureWpf(app.Main,Path.Combine(dir,"appearance-selected.png"));
+            app.Main.Appearance.FontPicker.IsDropDownOpen=true;
+            await Task.Delay(200);
+            Capture(app.Main,Path.Combine(dir,"font-menu.png"));
+            app.Main.Appearance.FontPicker.IsDropDownOpen=false;
+            RestoreAppearance(app,defaults);
+            await Task.Delay(500);
             app.Main.Appearance.Scroll.ScrollToEnd();
             await Task.Delay(200);
             CaptureWpf(app.Main,Path.Combine(dir,"appearance-bottom.png"));
@@ -62,6 +101,7 @@ internal static class SmokeTest
             app.ViewModel.FontSize=20; app.ViewModel.BackgroundOpacity=35;
             await app.ConnectAsync(); await Task.Delay(12000);
             var core=app.Overlay.Core!;
+            result["scrollLayout"]=await core.ExecuteScriptAsync("JSON.stringify((()=>{let n=document.querySelector('[class*=\"_list_bottom_\"]');const a=[];while(n){const s=getComputedStyle(n);a.push({cls:n.className,overflow:s.overflowY,direction:s.flexDirection,display:s.display,h:n.clientHeight,sh:n.scrollHeight,top:n.scrollTop,children:[...n.children].slice(0,5).map(e=>({cls:e.className,y:e.getBoundingClientRect().y,h:e.getBoundingClientRect().height}))});n=n.parentElement;}return a;})())");
             result["source"]=core.Source;
             result["liveStatus"]=app.ViewModel.LiveStatus;
             result["channelName"]=app.ViewModel.ChannelName;
