@@ -9,18 +9,32 @@
   const effects = window.ChatRevoLayout.createEffects();
   const seen = new WeakSet();
   let activeViewport;
+  let activeChat;
+  const addedRoots = new Set();
+  const markNeutral = node => {
+    if (node.hasAttribute('data-chat-revo-neutral')) return;
+    const color = getComputedStyle(node).backgroundColor.match(/[\d.]+/g)?.map(Number);
+    if (color && color.length >= 3 && (color.length === 3 || color[3] > 0) &&
+        Math.max(...color.slice(0,3)) < 65 && Math.max(...color.slice(0,3))-Math.min(...color.slice(0,3)) < 24)
+      node.dataset.chatRevoNeutral='';
+  };
   const tagChat = () => {
     // Discover containers by their semantic CSS-module names, not generated hashes.
     const chat = document.querySelector('[class*="_is_popup_chat_"]');
-    if (!chat) return;
+    if (!chat) { activeChat = null; activeViewport = null; follow.attach(null); addedRoots.clear(); return; }
     for (let node = chat; node && node !== document.documentElement; node = node.parentElement) node.dataset.chatRevoSurface='';
-    chat.querySelectorAll('div,section,article,ul').forEach(node => {
-      if (node.hasAttribute('data-chat-revo-neutral')) return;
-      const color = getComputedStyle(node).backgroundColor.match(/[\d.]+/g)?.map(Number);
-      if (color && color.length >= 3 && (color.length === 3 || color[3] > 0) &&
-          Math.max(...color.slice(0,3)) < 65 && Math.max(...color.slice(0,3))-Math.min(...color.slice(0,3)) < 24)
-        node.dataset.chatRevoNeutral='';
-    });
+    const panels = 'div,section,article,ul';
+    if (activeChat !== chat) {
+      activeChat = chat;
+      chat.querySelectorAll(panels).forEach(markNeutral);
+    } else {
+      for (const root of addedRoots) {
+        if (!chat.contains(root)) continue;
+        if (root.matches(panels)) markNeutral(root);
+        root.querySelectorAll(panels).forEach(markNeutral);
+      }
+    }
+    addedRoots.clear();
     const list = chat.querySelector('[class*="_list_bottom_"]');
     if (list) {
       for (let node=list; node && node!==chat; node=node.parentElement) node.dataset.chatRevoSurface='';
@@ -29,11 +43,14 @@
       if (viewport && viewport !== chat) {
         const initial = activeViewport !== viewport;
         activeViewport = viewport; follow.attach(viewport);
-        const rows = [...list.parentElement.children].filter(item=>item.className.includes('_item_'));
+        const rows = [...list.parentElement.children].filter(item=>item.matches('[class*="_item_"]'));
         const fresh = [];
         for (const item of rows) {
-          item.dataset.chatRevoMessage='';
-          if (!seen.has(item)) { seen.add(item); if (!initial) fresh.push(item); }
+          if (!seen.has(item)) {
+            item.dataset.chatRevoMessage='';
+            seen.add(item);
+            if (!initial) fresh.push(item);
+          }
         }
         follow.refresh(rows);
         if (follow.following) effects.enter(fresh);
@@ -98,10 +115,24 @@
   };
   const start = () => {
     ensureStyle(); tagChat();
-    observer = new MutationObserver(scheduleTag);
-    observer.observe(document.body,{childList:true,subtree:true});
+    observer = new MutationObserver(records => {
+      if (activeChat) {
+        outer: for (const record of records) {
+          for (const node of record.addedNodes) {
+            if (node.nodeType === Node.ELEMENT_NODE) addedRoots.add(node);
+            // A hidden WebView can defer animation frames for a long time.
+            if (addedRoots.size >= 256) { addedRoots.clear(); activeChat = null; break outer; }
+          }
+        }
+      }
+      scheduleTag();
+    });
+    observer.observe(document.documentElement,{childList:true,subtree:true});
   };
-  window.addEventListener('pagehide',()=>{observer?.disconnect();follow.dispose();effects.dispose();},{once:true});
+  window.addEventListener('pagehide', event => {
+    if (!event.persisted) { observer?.disconnect(); follow.dispose(); effects.dispose(); }
+  });
+  window.addEventListener('pageshow', event => { if (event.persisted) scheduleTag(); });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true}); else start();
   setTimeout(updateLive, 1500);
 })();

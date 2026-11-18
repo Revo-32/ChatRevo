@@ -4,9 +4,9 @@ Windows 게임 위에 치지직 공식 채팅을 표시하는 개인용 오버�
 
 ## 현재 버전
 
-1.1.0입니다. C# / .NET 10 / WPF / WebView2로 구현했습니다.
+1.1.1입니다. C# / .NET 10 / WPF / WebView2로 구현했습니다.
 
-설치 파일과 포터블 ZIP은 [GitHub Releases](https://github.com/Revo-32/ChatRevo/releases)에서 배포합니다. 변경 내용은 [1.1.0 릴리스 노트](docs/releases/1.1.0.md)에서 확인할 수 있습니다.
+설치 파일과 포터블 ZIP은 [GitHub Releases](https://github.com/Revo-32/ChatRevo/releases)에서 배포합니다. 변경 내용은 [1.1.1 릴리스 노트](docs/releases/1.1.1.md)에서 확인할 수 있습니다.
 
 - 공식 채팅 웹 페이지를 사용하므로 이모티콘과 구독티콘을 직접 재구성하지 않습니다.
 - 주간 후원 랭킹과 입력 영역은 숨깁니다. 실제 후원 메시지/구독 알림은 유지합니다.

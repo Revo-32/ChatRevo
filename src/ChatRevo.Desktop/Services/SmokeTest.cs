@@ -46,6 +46,10 @@ internal static class SmokeTest
                 await app.Overlay.Core.CallDevToolsProtocolMethodAsync("Input.dispatchMouseEvent", "{\"type\":\"mouseWheel\",\"x\":100,\"y\":100,\"deltaY\":800,\"deltaX\":0}");
                 await Task.Delay(400);
                 result["wheelResumesBottom"] = await CheckScript(app,"inputProbe.follow.following && inputProbe.follow.distance<2");
+                await app.Overlay.Core.ExecuteScriptAsync("inputProbe.box.addEventListener('wheel', e => e.preventDefault(), {once:true,passive:false});");
+                await app.Overlay.Core.CallDevToolsProtocolMethodAsync("Input.dispatchMouseEvent", "{\"type\":\"mouseWheel\",\"x\":100,\"y\":100,\"deltaY\":-160,\"deltaX\":0}");
+                await Task.Delay(400);
+                result["canceledWheelKeepsFollowing"] = await CheckScript(app,"inputProbe.follow.following && inputProbe.follow.distance<2");
                 await app.Overlay.Core.ExecuteScriptAsync("inputProbe.dispose();");
             }
             app.ViewModel.FontSize=28; app.ViewModel.BackgroundOpacity=25;
@@ -99,6 +103,31 @@ internal static class SmokeTest
             app.Main.Navigation.SelectedIndex=0;
             Capture(app.Overlay,Path.Combine(dir,"preview.png"));
             app.ViewModel.FontSize=20; app.ViewModel.BackgroundOpacity=35;
+            var testRecovery = Environment.GetEnvironmentVariable("CHATREVO_TEST_DISCONNECT") == "1";
+            if (testRecovery)
+                await app.Overlay.Core!.AddScriptToExecuteOnDocumentCreatedAsync("""
+                    if (window === top && location.hostname === 'chzzk.naver.com') {
+                      const Native = window.WebSocket;
+                      const chatSockets = new Set();
+                      let received = false;
+                      let interrupted = false;
+                      window.WebSocket = class extends Native {
+                        constructor(...args) {
+                          const chat = new URL(args[0], location.href).hostname.endsWith('.chat.naver.com');
+                          if (chat && interrupted) throw new Error('Simulated chat connection loss');
+                          super(...args);
+                          if (chat) {
+                            chatSockets.add(this);
+                            this.addEventListener('message', () => { received = true; }, {once:true});
+                            this.addEventListener('close', () => chatSockets.delete(this));
+                          }
+                        }
+                      };
+                      window.testChatOpen = () => [...chatSockets].some(s => s.readyState === Native.OPEN);
+                      window.testChatReceived = () => received;
+                      window.testDisconnect = () => { interrupted = true; for (const s of chatSockets) s.close(); };
+                    }
+                    """);
             await app.ConnectAsync(); await Task.Delay(12000);
             var core=app.Overlay.Core!;
             result["scrollLayout"]=await core.ExecuteScriptAsync("JSON.stringify((()=>{let n=document.querySelector('[class*=\"_list_bottom_\"]');const a=[];while(n){const s=getComputedStyle(n);a.push({cls:n.className,overflow:s.overflowY,direction:s.flexDirection,display:s.display,h:n.clientHeight,sh:n.scrollHeight,top:n.scrollTop,children:[...n.children].slice(0,5).map(e=>({cls:e.className,y:e.getBoundingClientRect().y,h:e.getBoundingClientRect().height}))});n=n.parentElement;}return a;})())");
@@ -141,6 +170,21 @@ internal static class SmokeTest
             Capture(app.Overlay,Path.Combine(dir,"chat-locked.png"));
             app.ToggleLock();
             app.Save(); result["settingsSaved"]=File.Exists(app.Store.FilePath);
+            if (testRecovery)
+            {
+                result["beforeDisconnectOpen"] = await CheckScript(app,"window.testChatOpen()");
+                await core.ExecuteScriptAsync("window.testOldDocument=true;window.testDisconnect();");
+                var started = System.Diagnostics.Stopwatch.StartNew();
+                var recovered = false;
+                for (var second=0; second<65 && !recovered; second++)
+                {
+                    await Task.Delay(1000);
+                    recovered = await core.ExecuteScriptAsync("!window.testOldDocument && window.testChatOpen?.() === true && window.testChatReceived?.() === true") == "true";
+                }
+                result["chatConnectionRecovered"] = recovered;
+                result["disconnectTestSeconds"] = started.Elapsed.TotalSeconds;
+                if (!recovered) throw new InvalidOperationException("채팅 연결 복구 시간 초과");
+            }
         }
         catch(Exception ex) { result["error"]=ex.ToString(); }
         finally { File.WriteAllText(Path.Combine(dir,"results.json"),JsonSerializer.Serialize(result,new JsonSerializerOptions {WriteIndented=true})); app.Exit(); }

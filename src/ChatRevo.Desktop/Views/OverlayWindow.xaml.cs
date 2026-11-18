@@ -15,6 +15,9 @@ public partial class OverlayWindow : Window
     private string _target = "https://chatrevo.local/preview.html";
     private readonly DispatcherTimer _retryTimer = new() { Interval = TimeSpan.FromSeconds(10) };
     private int _retryCount;
+    private readonly ChatSocketMonitor _sockets = new();
+    private ulong _navigation;
+    private bool _pageReady;
     private readonly DispatcherTimer _staleTimer = new() { Interval = TimeSpan.FromSeconds(15) };
     private DateTime _lastLive = DateTime.MinValue;
     public bool IsPreview { get; private set; } = true;
@@ -40,6 +43,14 @@ public partial class OverlayWindow : Window
         SizeChanged += (_, _) => BoundsChanged?.Invoke();
         SourceInitialized += (_, _) => SetLocked(false);
         _retryTimer.Tick += (_, _) => { _retryTimer.Stop(); Reload(); };
+        _staleTimer.Tick += (_, _) =>
+        {
+            if (!_disposed && _pageReady && !IsPreview && !_retryTimer.IsEnabled && _sockets.TakeRetry())
+            {
+                _controller.Report("채팅 서버에 다시 연결하고 있습니다.");
+                Reload();
+            }
+        };
         _staleTimer.Tick += (_, _) => { if (!IsPreview && DateTime.UtcNow - _lastLive > TimeSpan.FromSeconds(90)) _controller.ViewModel.LiveStatus = "시청자 수 갱신 지연"; };
         _staleTimer.Start();
         ApplyNativeStyle();
@@ -60,9 +71,31 @@ public partial class OverlayWindow : Window
             await core.AddScriptToExecuteOnDocumentCreatedAsync("window.ChatRevoFonts=" + catalog + ";\n" +
                 File.ReadAllText(Path.Combine(assets, "readability.js")) + "\n" +
                 File.ReadAllText(Path.Combine(assets, "chat-layout.js")) + "\n" + File.ReadAllText(Path.Combine(assets, "overlay.js")));
+            core.NavigationStarting += (_, e) =>
+            {
+                if (e.Cancel) return;
+                _navigation = e.NavigationId;
+                _pageReady = false;
+                _sockets.BeginDocument(!IsPreview && e.Uri == _target);
+                _retryTimer.Stop();
+            };
             core.NavigationCompleted += OnNavigationCompleted;
             core.WebMessageReceived += OnWebMessage;
-            core.ProcessFailed += (_, _) => ShowError("브라우저 연결이 중단되었습니다. 다시 연결을 눌러주세요.");
+            core.ProcessFailed += (_, e) =>
+            {
+                if (_disposed) return;
+                if (e.ProcessFailedKind == CoreWebView2ProcessFailedKind.RenderProcessExited)
+                    ScheduleNavigationRetry();
+                else if (e.ProcessFailedKind == CoreWebView2ProcessFailedKind.BrowserProcessExited)
+                {
+                    _pageReady = false;
+                    _retryTimer.Stop();
+                    RetryButton.Visibility = Visibility.Collapsed;
+                    ShowError("브라우저가 종료되었습니다. Chat Revo를 다시 실행해주세요.");
+                }
+            };
+            try { await _sockets.ObserveAsync(core); }
+            catch (System.Runtime.InteropServices.COMException) { _sockets.Dispose(); }
         }
         catch (Exception ex)
         {
@@ -74,6 +107,8 @@ public partial class OverlayWindow : Window
     public async Task NavigateAsync(string? channelId)
     {
         IsPreview = channelId is null;
+        _pageReady = false;
+        _sockets.ChangeChannel();
         _target = IsPreview ? "https://chatrevo.local/preview.html" : ChannelAddress.ChatUrl(channelId!);
         _retryTimer.Stop(); _retryCount = 0; _lastLive = DateTime.UtcNow;
         await InitializeAsync();
@@ -83,14 +118,14 @@ public partial class OverlayWindow : Window
     }
     private async void OnNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
     {
-        if (_disposed) return;
+        if (_disposed || e.NavigationId != _navigation) return;
         if (!e.IsSuccess)
         {
-            ShowError("네트워크 연결을 확인해주세요. 자동 재연결 중입니다.");
-            _retryTimer.Interval = TimeSpan.FromSeconds(Math.Min(60, 5 * Math.Pow(2, Math.Min(_retryCount++, 4))));
-            _retryTimer.Start();
+            if (e.WebErrorStatus != CoreWebView2WebErrorStatus.OperationCanceled) ScheduleNavigationRetry();
             return;
         }
+        _pageReady = true;
+        _retryTimer.Stop();
         _retryCount = 0;
         ErrorPanel.Visibility = Visibility.Collapsed;
         try { await ApplyStyleAsync(); _controller.Report(IsPreview ? "미리보기입니다. 실제 채팅은 채팅 연결을 눌러주세요." : "채팅 페이지를 열었습니다. 로그인은 설정 창에서 진행할 수 있습니다."); }
@@ -162,12 +197,20 @@ public partial class OverlayWindow : Window
         try { await Core.ExecuteScriptAsync($"window.__chatRevo?.setLocked?.({locked.ToString().ToLowerInvariant()});"); }
         catch (Exception) { /* The next navigation applies the current lock state. */ }
     }
-    public void Reload() { if (Core is not null && !_disposed) { _retryTimer.Stop(); ErrorPanel.Visibility = Visibility.Collapsed; Core.Navigate(_target); } }
+    private void ScheduleNavigationRetry()
+    {
+        _pageReady = false;
+        if (_retryTimer.IsEnabled) return;
+        ShowError("채팅 페이지에 다시 연결하고 있습니다.");
+        _retryTimer.Interval = TimeSpan.FromSeconds(Math.Min(60, 5 * (1 << Math.Min(_retryCount++, 4))));
+        _retryTimer.Start();
+    }
+    public void Reload() { if (!_disposed && Core is not null) { _pageReady = false; _retryTimer.Stop(); ErrorPanel.Visibility = Visibility.Collapsed; Core.Navigate(_target); } }
     private void ShowError(string message) { ErrorText.Text = message; ErrorPanel.Visibility = Visibility.Visible; _controller.Report(message); }
     private void DragHeader(object sender, MouseButtonEventArgs e) { if (!_controller.ViewModel.Locked && e.LeftButton == MouseButtonState.Pressed) DragMove(); }
     private void LockClick(object sender, RoutedEventArgs e) => _controller.ToggleLock();
     private void RetryClick(object sender, RoutedEventArgs e) => Reload();
-    protected override void OnClosed(EventArgs e) { _disposed = true; _retryTimer.Stop(); _staleTimer.Stop(); Browser.Dispose(); base.OnClosed(e); }
+    protected override void OnClosed(EventArgs e) { _disposed = true; _retryTimer.Stop(); _staleTimer.Stop(); _sockets.Dispose(); Browser.Dispose(); base.OnClosed(e); }
 }
 
 internal static class JsonExtensions

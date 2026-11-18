@@ -23,7 +23,6 @@
     const onWheel = event => {
       if (locked || !event.isTrusted) return;
       gestureUntil = performance.now() + 300;
-      if (event.deltaY < 0 && viewport.scrollHeight > viewport.clientHeight + 2) following = false;
       if (event.deltaY > 0) requestAnimationFrame(() => { if (distance() <= 24) { following=true; schedule(); } });
     };
     const onPointer = event => { if (!locked && event.isTrusted) { dragging=true; gestureUntil=performance.now()+300; } };
@@ -61,6 +60,7 @@
     document.fonts.addEventListener('loadingdone', schedule);
     window.addEventListener('pointerup', onPointerEnd);
     window.addEventListener('pointercancel', onPointerEnd);
+    window.addEventListener('blur', onPointerEnd);
     return {
       attach, refresh, schedule,
       setLocked(value) { locked = value; if (locked) { following = true; schedule(); } },
@@ -74,6 +74,7 @@
         if (viewport) listen(viewport, 'removeEventListener');
         resize.disconnect(); rows.clear(); document.fonts.removeEventListener('loadingdone', schedule);
         window.removeEventListener('pointerup', onPointerEnd); window.removeEventListener('pointercancel', onPointerEnd);
+        window.removeEventListener('blur', onPointerEnd);
       }
     };
   };
